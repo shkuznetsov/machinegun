@@ -12,25 +12,24 @@
 var machinegun = require('machinegun');
 
 var mg = machinegun({
-	parallel: 1,
-	giveupOnError: false,
+	barrels: 1,
+	giveUpOnError: false,
 	fireImmediately: true,
 	fireAsynchronously: true
 });
 
-for (var i = 0; i < 10; ++i) () => {
-	var context = i;
-	mg.load((cb, emitter) => {
+for (var i = 0; i < 10; ++i) {
+	mg.load((cb) => {
 		var foo = somethingAsynchronous((err) => {
 			if (err) console.log("I'm errored");
 			else console.log("I'm succeeded");
-			cb(err, context);
+			cb(err);
 		});
-		emitter.on('ceasefire', foo.pause);
-		emitter.on('fire', foo.resume);
-		emitter.on('giveup', foo.abort);
-	});
-}();
+		mg.on('ceaseFire', foo.pause);
+		mg.on('resumeFire', foo.resume);
+		mg.on('giveUp', foo.abort);
+	}, i);
+}
 
 // Events
 
@@ -38,9 +37,8 @@ mg.on('error', (err, context) => {
 	console.log("Task " + context + " errored", err);
 });
 
-mg.on('giveup', (err) => {
-	if (err) console.log("Gave up because there was an error", err);
-	else console.log("Gave up because was told to");
+mg.on('giveUp', () => {
+	console.log("White flags up!");
 });
 
 mg.on('empty', () => {
@@ -49,9 +47,9 @@ mg.on('empty', () => {
 
 // Flow management
 
-someExternalTrigger.on('pause', mg.ceasefire.bind(mg));
-someExternalTrigger.on('resume', mg.fire.bind(mg));
-someExternalTrigger.on('abort', mg.giveup.bind(mg));
+someExternalTrigger.on('pause', mg.ceaseFire.bind(mg));
+someExternalTrigger.on('resume', mg.resumeFire.bind(mg));
+someExternalTrigger.on('abort', mg.giveUp.bind(mg));
 ```
 
 ## LICENSE
