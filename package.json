@@ -1,0 +1,41 @@
+{
+  "name": "machinegun",
+  "description": "Run asynchronous tasks sequentially or in parallel",
+  "version": "0.0.0",
+  "author": {
+    "name": "Alexander Kuznetsov",
+    "email": "alexander@kuznetsov.by",
+    "url": "http://kuznetsov.by/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shkuznetsov/machinegun.git"
+  },
+  "homepage": "https://github.com/shkuznetsov/machinegun",
+  "keywords": [
+    "task",
+    "asynchronous",
+    "async",
+    "parallel",
+    "sequential",
+    "progress",
+    "pause",
+    "resume"
+  ],
+  "main": "./index.js",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/shkuznetsov/machinegun/issues"
+  }
+}
