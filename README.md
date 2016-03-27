@@ -6,50 +6,76 @@
 
 `npm install machinegun`
 
-## Usage
+## Usage example
+
+### Initialisation
 
 ```javascript
-var machinegun = require('machinegun');
+// Require the class
+var Machinegun = require('machinegun');
 
-var mg = machinegun({
-	barrels: 1,
-	giveUpOnError: false,
-	fireImmediately: true,
-	fireAsynchronously: true
+// Create an instance
+var mg = new Machinegun({
+	barrels: 1, // Number of barrels to fire from (ok, ok, parallel tasks, 1 == sequential execution)
+	giveUpOnError: false, // Cancel all running and scheduled tasks if one fails?
+	fireImmediately: true // Start executing the first task immediately after loading?
 });
 
-for (var i = 0; i < 10; ++i) {
+// Load some tasks in
+for (var i = 0; i < 10; ++i)
+	// A function passed to the .load() method should either take a callback parameter or return a promise
+	// It will be triggered by machinegun when it's time to fire this task
 	mg.load((cb) => {
+		// The task function should perform some asynchronous operation
 		var foo = somethingAsynchronous((err) => {
 			if (err) console.log("I'm errored");
 			else console.log("I'm succeeded");
+			// When the operation complete, a callback should be called
 			cb(err);
 		});
+		// You'd need to hook to some events in order to support machinegun state changes
+		// while the asynchronous operation is still in progress
 		mg.on('ceaseFire', foo.pause);
-		mg.on('resumeFire', foo.resume);
+		mg.on('fire', foo.resume);
 		mg.on('giveUp', foo.abort);
-	}, i);
-}
+	});
+```
 
-// Events
+### Flow management
 
-mg.on('error', (err, context) => {
-	console.log("Task " + context + " errored", err);
-});
+```javascript
+// In case the machinegun was set with fireImmediately == false,
+// it will need to be started manually
+mg.fire()
 
-mg.on('giveUp', () => {
-	console.log("White flags up!");
-});
+// Call .ceaseFire() in order to pause the machinegun
+someExternalTrigger.on('pause', () => mg.ceaseFire());
+// ... and .fire() to start it again
+someExternalTrigger.on('resume', () => mg.fire());
 
-mg.on('empty', () => {
-	console.log("Magazine empty!");
-});
+// If you want to abort the execution completely, call .giveUp()
+someExternalTrigger.on('abort', () => mg.giveUp());
+```
 
-// Flow management
+### Events
 
-someExternalTrigger.on('pause', mg.ceaseFire.bind(mg));
-someExternalTrigger.on('resume', mg.resumeFire.bind(mg));
-someExternalTrigger.on('abort', mg.giveUp.bind(mg));
+```javascript
+// Machinegun will emit 'error' if a task has errored
+// This may be emitted multiple times if giveUpOnError == false
+mg.on('error', (err) => console.log("Task errored", err));
+
+// Machinegun will emit 'giveUp' if a task has errored and giveUpOnError == true
+// or .giveUp() method was invoked explicitly
+mg.on('giveUp', () => console.log("White flags up!"));
+
+// Machinegun will emit 'empty' after the last task in the magazine has completed
+// This will not be emitted if giveUpOnError == true and there was an error
+// But if giveUpOnError == false, it will be emitted despite of the error!
+mg.on('empty', () => console.log("Magazine empty!"));
+
+// Machinegun will emit 'fire' and 'ceaseFire' when respective methods are invoked
+mg.on('fire', () => console.log("Fire opened"));
+mg.on('ceaseFire', () => console.log("Fire ceased"));
 ```
 
 ## LICENSE
