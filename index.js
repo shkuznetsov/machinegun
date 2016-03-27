@@ -17,11 +17,11 @@ module.exports = function (opt) {
 
 	// Primer function wrapper class
 	// Used mainly to contextualise callback
-	var Cartridge = function (powder, context) {
+	var Cartridge = function (powder) {
 		var callback = function (err) {
 			shooting--;
 			if (err) {
-				machinegun.emit('error', err, context);
+				machinegun.emit('error', err);
 				if (opt.giveupOnError) machinegun.giveUp();
 			}
 			trigger();
@@ -53,8 +53,8 @@ module.exports = function (opt) {
 
 	// API methods
 
-	machinegun.load = function (primer, context) {
-		magazine.push(new Cartridge(primer, context));
+	machinegun.load = function (primer) {
+		magazine.push(new Cartridge(primer));
 		trigger();
 		return machinegun;
 	};
