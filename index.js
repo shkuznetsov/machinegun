@@ -9,8 +9,7 @@ module.exports = function (opt) {
 	var opt = {
 		barrels: typeof opt.barrels == 'undefined' ? 1 : opt.barrels,
 		giveupOnError: typeof opt.giveupOnError == 'undefined' ? false : opt.giveupOnError,
-		fireImmediately: typeof opt.fireImmediately == 'undefined' ? true : opt.fireImmediately,
-		fireAsynchronously: typeof opt.fireAsynchronously == 'undefined' ? true : opt.fireAsynchronously,
+		fireImmediately: typeof opt.fireImmediately == 'undefined' ? true : opt.fireImmediately
 	};
 
 	// State machine: firing, fireCeased, givenUp
@@ -35,8 +34,7 @@ module.exports = function (opt) {
 		};
 		this.shoot = function () {
 			shooting++;
-			if (opt.fireAsynchronously) process.nextTick(primer);
-			else primer();
+			process.nextTick(primer);
 		};
 	};
 
