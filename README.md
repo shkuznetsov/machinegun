@@ -6,7 +6,7 @@
 
 `npm install machinegun`
 
-## Usage example
+## Basic usage example
 
 ### Initialisation
 
@@ -16,29 +16,32 @@ var Machinegun = require('machinegun');
 
 // Create an instance
 var mg = new Machinegun({
-	barrels: 1, // Number of barrels to fire from (ok, ok, parallel tasks, 1 == sequential execution)
-	giveUpOnError: false, // Cancel all running and scheduled tasks if one fails?
-	fireImmediately: true // Start executing the first task immediately after loading?
+  barrels: 1, // Number of parallel tasks, 1 => sequential execution
+  giveUpOnError: false, // Cancel all the tasks if one fails?
+  fireImmediately: true // Trigger the first task immediately after loading?
 });
+```
 
-// Load some tasks in
+### Loading tasks
+
+```javascript
 for (var i = 0; i < 10; ++i)
-	// A function passed to the .load() method should either take a callback parameter or return a promise
-	// It will be triggered by machinegun when it's time to fire this task
-	mg.load((cb) => {
-		// The task function should perform some asynchronous operation
-		var foo = somethingAsynchronous((err) => {
-			if (err) console.log("I'm errored");
-			else console.log("I'm succeeded");
-			// When the operation complete, a callback should be called
-			cb(err);
-		});
-		// You'd need to hook to some events in order to support machinegun state changes
-		// while the asynchronous operation is still in progress
-		mg.on('ceaseFire', foo.pause);
-		mg.on('fire', foo.resume);
-		mg.on('giveUp', foo.abort);
-	});
+  // A function passed to .load() should either take a callback or return a promise
+  // It will be triggered by machinegun when it's time to fire this task
+  mg.load((cb) => {
+    // The task function should perform some asynchronous operation
+    var foo = somethingAsynchronous((err) => {
+      if (err) console.log("I'm errored");
+      else console.log("I'm succeeded");
+      // When the operation complete, a callback should be called
+      cb(err);
+    });
+    // You'd need to hook to some events in order to support machinegun state changes
+    // while the asynchronous operation is still in progress
+    mg.on('ceaseFire', foo.pause);
+    mg.on('fire', foo.resume);
+    mg.on('giveUp', foo.abort);
+  });
 ```
 
 ### Flow management
@@ -81,5 +84,7 @@ mg.on('ceaseFire', () => console.log("Fire ceased"));
 ## LICENSE
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
+
+## Selfie
 
 ![Machine gun](https://media.giphy.com/media/f2fVSJWddYb6g/giphy.gif)
