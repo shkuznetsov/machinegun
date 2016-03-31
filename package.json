@@ -1,7 +1,7 @@
 {
   "name": "machinegun",
   "description": "Run asynchronous tasks sequentially or in parallel",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": {
     "name": "Alexander Kuznetsov",
     "email": "alexander@kuznetsov.by",
