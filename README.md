@@ -8,7 +8,7 @@
 
 ## Basic usage example
 
-### Initialisation
+### Initialization
 
 ```javascript
 // Require the class
@@ -60,25 +60,104 @@ someExternalTrigger.on('resume', () => mg.fire());
 someExternalTrigger.on('abort', () => mg.giveUp());
 ```
 
-### Events
+## Reference
+
+### Initialization
+
+Module exports a function, returning an object. Hence all the below invocation patterns are valid and would produce the same result:
 
 ```javascript
-// Machinegun will emit 'error' if a task has errored
-// This may be emitted multiple times if giveUpOnError == false
+var mg = require('machinegun')(opt);
+```
+```javascript
+var Machinegun = require('machinegun');
+var mg = new Machinegun(opt);
+```
+```javascript
+var machinegun = require('machinegun');
+var mg = machinegun(opt);
+```
+
+Machinegun object implements [EventEmitter](https://nodejs.org/api/events.html) interface. Please refer to the [events](#events) section below for the full list of emitted events.
+
+### Options
+
+#### `barrels` (int)
+Number of parallel task execution conveyors. Defaults to `1` which means sequential execution. `0`, or any other falsy value would set unlimited parallelism.
+
+#### `giveUpOnError` (bool)
+Whether to cancel all running and scheduled tasks in case of an error. Defaults to `false`, which means all the tasks will be triggered despite of the errors.
+
+#### `fireImmediately` (bool)
+Whether to trigger first task execution immediately after it has been loaded. Defaults to `true`. If set to `false` would not start untill `.fire()` called.
+
+### Methods
+
+#### `.load()`
+
+Accepts a function, which should either accept a callback parameter or return a promise:
+
+```javascript
+mg.load((cb) => process.nextTick(cb));
+```
+```javascript
+mg.load(() => new Promise((resolve, reject) => process.nextTick(resolve)));
+```
+
+#### `.fire()`
+
+Starts tasks execution in case `fireImmediately` was set to `false` or if the execution was previously paused with `.ceaseFire()`. Causes the machinegun to emit `fire` event.
+
+#### `.ceaseFire()`
+
+Pauses tasks execution until `.fire()` is called.
+
+
+### Events
+
+#### `error`
+
+Machinegun will emit `error` event if a task has errored. This may be emitted multiple times in case `giveUpOnError` was set to `false`.
+```javascript
 mg.on('error', (err) => console.log("Task errored", err));
+```
 
-// Machinegun will emit 'giveUp' if a task has errored and giveUpOnError == true
-// or .giveUp() method was invoked explicitly
+#### `giveUp`
+
+Machinegun will emit `giveUp` event if a task has errored and `giveUpOnError` was set to `true`, or when `.giveUp()` method was invoked explicitly.
+It is not possible to load more tasks after the machinegun has given up.
+```javascript
 mg.on('giveUp', () => console.log("White flags up!"));
+```
 
-// Machinegun will emit 'empty' after the last task in the magazine has completed
-// This will not be emitted if giveUpOnError == true and there was an error
-// But if giveUpOnError == false, it will be emitted despite of the error!
+#### `empty`
+
+Machinegun will emit `empty` after the last task in the magazine has completed.
+This will not be emitted if `giveUpOnError` was set to `true` and there was an error.
+However, if `giveUpOnError` was set to `false`, it will be emitted even if some tasks have errored.
+Please note that it is possible to load in more tasks after the magazine has emptied, hence this event may be emitted multiple times.
+```javascript
 mg.on('empty', () => console.log("Magazine empty!"));
+```
 
-// Machinegun will emit 'fire' and 'ceaseFire' when respective methods are invoked
+#### `fire` and `ceaseFire`
+
+Machinegun will emit `fire` and `ceaseFire` events after respective methods were invoked
+```javascript
 mg.on('fire', () => console.log("Fire opened"));
 mg.on('ceaseFire', () => console.log("Fire ceased"));
+```
+
+#### Tasks synchronisation
+
+Since one task may error while the other one is still running, as well as to support `.ceaseFire()`/`.fire()` methods, it is advisable to subscribe to some events within the task function:
+```javascript
+mg.load((cb) => {
+  var foo = somethingAsynchronous((err) => cb(err));
+  mg.on('ceaseFire', foo.pause);
+  mg.on('fire', foo.resume);
+  mg.on('giveUp', foo.abort);
+});
 ```
 
 ## LICENSE
