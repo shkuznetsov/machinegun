@@ -112,6 +112,10 @@ Starts tasks execution in case `fireImmediately` was set to `false` or if the ex
 
 Pauses tasks execution until `.fire()` is called.
 
+#### `.giveUp()`
+
+Aborts execution. No tasks may be added to the machinegun after it has given up. Nor can it be re-started with `.fire()`.
+
 
 ### Events
 
