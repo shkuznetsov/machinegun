@@ -36,7 +36,7 @@ for (var i = 0; i < 10; ++i)
       // When the operation complete, a callback should be called
       cb(err);
     });
-    // You'd need to hook to some events in order to support machinegun state changes
+    // Hook to machinegun events in order to react to state changes
     // while the asynchronous operation is still in progress
     mg.on('ceaseFire', foo.pause);
     mg.on('fire', foo.resume);
@@ -64,7 +64,7 @@ someExternalTrigger.on('abort', () => mg.giveUp());
 
 ### Initialization
 
-Module exports a function, returning an object. Hence all the below invocation patterns are valid and would produce the same result:
+Module exports a function returning an object. Hence all the below invocation patterns are valid and would produce the same result:
 
 ```javascript
 var mg = require('machinegun')(opt);
@@ -83,13 +83,13 @@ Machinegun object implements [EventEmitter](https://nodejs.org/api/events.html) 
 ### Options
 
 #### `barrels` (int)
-Number of parallel task execution conveyors. Defaults to `1` which means sequential execution. `0`, or any other falsy value would set unlimited parallelism.
+Number of parallel task execution conveyors. Defaults to `1` which ensures sequential execution. `0`, or any other falsy value would set unlimited parallelism.
 
 #### `giveUpOnError` (bool)
 Whether to cancel all running and scheduled tasks in case of an error. Defaults to `false`, which means all the tasks will be triggered despite of the errors.
 
 #### `fireImmediately` (bool)
-Whether to trigger first task execution immediately after it has been loaded. Defaults to `true`. If set to `false` would not start untill `.fire()` called.
+Whether to trigger first task execution immediately after it has been loaded. Defaults to `true`. If set to `false` the machinegun would not start untill `.fire()` is called.
 
 ### Methods
 
@@ -115,7 +115,6 @@ Pauses tasks execution until `.fire()` is called.
 #### `.giveUp()`
 
 Aborts execution. No tasks may be added to the machinegun after it has given up. Nor can it be re-started with `.fire()`.
-
 
 ### Events
 
@@ -146,7 +145,7 @@ mg.on('empty', () => console.log("Magazine empty!"));
 
 #### `fire` and `ceaseFire`
 
-Machinegun will emit `fire` and `ceaseFire` events after respective methods were invoked
+Machinegun will emit `fire` and `ceaseFire` events when respective methods are invoked
 ```javascript
 mg.on('fire', () => console.log("Fire opened"));
 mg.on('ceaseFire', () => console.log("Fire ceased"));
