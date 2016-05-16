@@ -1,6 +1,6 @@
 # machinegun [![NPM version](https://badge.fury.io/js/machinegun.svg)](https://badge.fury.io/js/machinegun)
 
-`machinegun` runs asynchronous tasks sequentially or in parallel.
+Async task runner with controlled parallelism and an angry cat.
 
 ## Installation
 
@@ -168,6 +168,6 @@ mg.load((cb) => {
 
 [MIT License](http://en.wikipedia.org/wiki/MIT_License)
 
-## Selfie
+## The angry cat
 
 ![Machine gun](https://media.giphy.com/media/f2fVSJWddYb6g/giphy.gif)

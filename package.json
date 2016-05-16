@@ -1,6 +1,6 @@
 {
   "name": "machinegun",
-  "description": "Run asynchronous tasks sequentially or in parallel",
+  "description": "Async task runner with controlled parallelism and an angry cat",
   "version": "0.0.2",
   "author": {
     "name": "Alexander Kuznetsov",
@@ -13,12 +13,11 @@
   },
   "homepage": "https://github.com/shkuznetsov/machinegun",
   "keywords": [
-    "task",
-    "asynchronous",
     "async",
+    "task",
+    "runner",
     "parallel",
-    "sequential",
-    "progress",
+    "sequential"
     "pause",
     "resume"
   ],
