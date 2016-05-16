@@ -1,7 +1,7 @@
 {
   "name": "machinegun",
   "description": "Async task runner with controlled parallelism and an angry cat",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": {
     "name": "Alexander Kuznetsov",
     "email": "alexander@kuznetsov.by",
