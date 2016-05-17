@@ -25,23 +25,22 @@ var mg = new Machinegun({
 ### Loading tasks
 
 ```javascript
-for (var i = 0; i < 10; ++i)
-  // A function passed to .load() should either take a callback or return a promise
-  // It will be triggered by machinegun when it's time to fire this task
-  mg.load((cb) => {
-    // The task function should perform some asynchronous operation
-    var foo = somethingAsynchronous((err) => {
-      if (err) console.log("I'm errored");
-      else console.log("I'm succeeded");
-      // When the operation complete, a callback should be called
-      cb(err);
-    });
-    // Hook to machinegun events in order to react to state changes
-    // while the asynchronous operation is still in progress
-    mg.on('ceaseFire', foo.pause);
-    mg.on('fire', foo.resume);
-    mg.on('giveUp', foo.abort);
+// A function passed to .load() should either take a callback or return a promise
+// It will be triggered by machinegun when it's time to fire this task
+mg.load((cb) => {
+  // The task function should perform some asynchronous operation
+  var foo = somethingAsynchronous((err) => {
+    if (err) console.log("I'm errored");
+    else console.log("I'm succeeded");
+    // When the operation complete, a callback should be called
+    cb(err);
   });
+  // Hook to machinegun events in order to react to state changes
+  // while the asynchronous operation is still in progress
+  mg.on('ceaseFire', foo.pause);
+  mg.on('fire', foo.resume);
+  mg.on('giveUp', foo.abort);
+});
 ```
 
 ### Flow management
