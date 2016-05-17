@@ -17,7 +17,7 @@
     "task",
     "runner",
     "parallel",
-    "sequential"
+    "sequential",
     "pause",
     "resume"
   ],
