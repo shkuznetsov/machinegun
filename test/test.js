@@ -51,25 +51,39 @@ describe('machinegun', function () {
 		});
 	});
 
-	it("should accept a promise instead of a callback", function(done) {
-		var mg = machinegun();
+	it("should fail on error", function(done) {
+		var mg = machinegun({giveupOnError: true});
 		mg.load(function (cb) {
-			mg.emit('start');
-			return new Promise(function (resolve, reject) {
-				mg.emit('finish');
-				resolve();
-			});
+			cb('err');
 		});
-		mg.on('empty', function () {
-			expect(mg).to
-				.emit('start')
-				.next('finish')
-				.last('empty');
-			done();
-		});
+		mg.on('giveUp', done);
 	});
 
-	it("should not start firing if 'fireImmediately' is set to false ", function(done) {
+	it("should accept a promise instead of a callback", function(done) {
+		var mg = machinegun();
+		mg.load(function () {
+			return Promise.resolve();
+		});
+		mg.on('empty', done);
+	});
+
+	it("should emit an error if a promise rejects", function(done) {
+		var mg = machinegun();
+		mg.load(function () {
+			return Promise.reject();
+		});
+		mg.on('error', function() {done();});
+	});
+
+	it("should give up if a promise rejects", function(done) {
+		var mg = machinegun({giveupOnError: true});
+		mg.load(function () {
+			return Promise.reject();
+		});
+		mg.on('giveUp', done);
+	});
+
+	it("should not start firing if 'fireImmediately' is set to false", function(done) {
 		var mg = machinegun({fireImmediately: false});
 		mg.load(function (cb) {
 			mg.emit('start');

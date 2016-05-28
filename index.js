@@ -21,7 +21,9 @@ module.exports = function (opt) {
 		var callback = function (err) {
 			shooting--;
 			if (err) {
-				machinegun.emit('error', err);
+				// Only emit error if a listener exists
+				// This is mainly to prevent silent errors in promises
+				if (machinegun.listenerCount('error')) machinegun.emit('error', err);
 				if (opt.giveupOnError) machinegun.giveUp();
 			}
 			trigger();
