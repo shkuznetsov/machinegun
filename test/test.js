@@ -106,4 +106,20 @@ describe('machinegun', function () {
 			done();
 		});
 	});
+
+	it("should return a promise, which resolves on success", function(done) {
+		var mg = machinegun();
+		mg.load(function () {
+			return Promise.resolve();
+		});
+		mg.promise().then(done);
+	});
+
+	it("should return a promise, which rejects on failure", function(done) {
+		var mg = machinegun({giveupOnError: true});
+		mg.load(function () {
+			return Promise.reject();
+		});
+		mg.promise().catch(done);
+	});
 });

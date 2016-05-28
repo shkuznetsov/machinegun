@@ -87,8 +87,8 @@ module.exports = function (opt) {
 
 	machinegun.promise = function () {
 		return new Promise(function (resolve, reject) {
-			machinegun.on('empty', resolve());
-			machinegun.on('giveUp', reject());
+			machinegun.on('empty', resolve);
+			machinegun.on('giveUp', reject);
 		});
 	}
 
