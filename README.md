@@ -115,6 +115,10 @@ Pauses tasks execution until `.fire()` is called.
 
 Aborts execution. No tasks may be added to the machinegun after it has given up. Nor can it be re-started with `.fire()`.
 
+#### `.promise()`
+
+Returns a promise, which resolves when the machinegun empties and rejects when it gives up.
+
 ### Events
 
 #### `error`
