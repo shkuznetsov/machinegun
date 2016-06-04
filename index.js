@@ -9,6 +9,7 @@ module.exports = function (opt) {
 	var opt = {
 		barrels: typeof opt.barrels == 'undefined' ? 1 : opt.barrels,
 		giveupOnError: typeof opt.giveupOnError == 'undefined' ? false : opt.giveupOnError,
+		ceaseOnEmpty: typeof opt.ceaseOnEmpty == 'undefined' ? false : opt.ceaseOnEmpty,
 		fireImmediately: typeof opt.fireImmediately == 'undefined' ? true : opt.fireImmediately
 	};
 
@@ -49,6 +50,7 @@ module.exports = function (opt) {
 			}
 			else if (!shooting) {
 				machinegun.emit('empty');
+				if (opt.ceaseOnEmpty) machinegun.ceaseFire();
 			}
 		}
 	};

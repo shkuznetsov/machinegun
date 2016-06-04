@@ -1,6 +1,6 @@
 # machinegun [![NPM version](https://badge.fury.io/js/machinegun.svg)](https://badge.fury.io/js/machinegun)
 
-Async task runner with controlled parallelism and an angry cat.
+Async task runner with controlled parallelism (and an angry cat)
 
 ## Installation
 
@@ -86,6 +86,9 @@ Number of parallel task execution conveyors. Defaults to `1` which ensures seque
 
 #### `giveUpOnError` (bool)
 Whether to cancel all running and scheduled tasks in case of an error. Defaults to `false`, which means all the tasks will be triggered despite of the errors.
+
+#### `ceaseOnEmpty` (bool)
+Whether to cease fire after the machinegun has emptied. Defaults to `false`, which means a task loaded after the machinegun has emptied will fire immediately. If set to `true` the machinegun will have to be implicitly restarted by calling `.fire()` after emptied.
 
 #### `fireImmediately` (bool)
 Whether to trigger first task execution immediately after it has been loaded. Defaults to `true`. If set to `false` the machinegun would not start untill `.fire()` is called.
