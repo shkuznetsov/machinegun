@@ -8,7 +8,7 @@ Async task runner with controlled parallelism (and an angry cat)
 
 ## Basic usage example
 
-### Initialization
+### Initialisation
 
 ```javascript
 // Require the class
@@ -18,6 +18,7 @@ var Machinegun = require('machinegun');
 var mg = new Machinegun({
   barrels: 1, // Number of parallel tasks, 1 => sequential execution
   giveUpOnError: false, // Cancel all the tasks if one fails?
+  ceaseOnEmpty: false, // Cease fire when magazine is empty?
   fireImmediately: true // Trigger the first task immediately after loading?
 });
 ```
@@ -34,6 +35,7 @@ mg.load((cb) => {
     else console.log("I'm succeeded");
     // When the operation complete, a callback should be called
     cb(err);
+	// Alternatively the function may return a promise
   });
   // Hook to machinegun events in order to react to state changes
   // while the asynchronous operation is still in progress
@@ -46,7 +48,7 @@ mg.load((cb) => {
 ### Flow management
 
 ```javascript
-// In case the machinegun was set with fireImmediately == false,
+// If the machinegun was set with fireImmediately == false,
 // it will need to be started manually
 mg.fire()
 
@@ -61,7 +63,7 @@ someExternalTrigger.on('abort', () => mg.giveUp());
 
 ## Reference
 
-### Initialization
+### Initialisation
 
 Module exports a function returning an object. Hence all the below invocation patterns are valid and would produce the same result:
 
@@ -86,12 +88,14 @@ Number of parallel task execution conveyors. Defaults to `1` which ensures seque
 
 #### `giveUpOnError` (bool)
 Whether to cancel all running and scheduled tasks in case of an error. Defaults to `false`, which means all the tasks will be triggered despite of the errors.
+If an error occurs when `giveUpOnError` is set to `true`, it causes both `error` and `giveUp` events to be triggered with the error value passed to both as an argument.
 
 #### `ceaseOnEmpty` (bool)
 Whether to cease fire after the machinegun has emptied. Defaults to `false`, which means a task loaded after the machinegun has emptied will fire immediately. If set to `true` the machinegun will have to be implicitly restarted by calling `.fire()` after emptied.
 
 #### `fireImmediately` (bool)
-Whether to trigger first task execution immediately after it has been loaded. Defaults to `true`. If set to `false` the machinegun would not start untill `.fire()` is called.
+Whether to trigger first task execution immediately after it has been loaded. Defaults to `true`.
+If set to `false` the machinegun will be initialised in `fireCeased` state and will not start untill `.fire()` method is called.
 
 ### Methods
 
@@ -106,6 +110,9 @@ mg.load((cb) => process.nextTick(cb));
 mg.load(() => new Promise((resolve, reject) => process.nextTick(resolve)));
 ```
 
+If the callback is called with a falsy argument or the promise rejects, an `error` event is emitted with an error value or a rejection reason respectively as an argument.
+If `giveUpOnError` was set to `true` the machinegun also gives up, i.e. emits `giveUp` event with the same argument and cancels any subsequent tasks.
+
 #### `.fire()`
 
 Starts tasks execution in case `fireImmediately` was set to `false` or if the execution was previously paused with `.ceaseFire()`. Causes the machinegun to emit `fire` event.
@@ -114,29 +121,34 @@ Starts tasks execution in case `fireImmediately` was set to `false` or if the ex
 
 Pauses tasks execution until `.fire()` is called.
 
-#### `.giveUp()`
+#### `.giveUp(reason)`
 
 Aborts execution. No tasks may be added to the machinegun after it has given up. Nor can it be re-started with `.fire()`.
+Value of the optional `reason` argument will be passed to the `giveUp` event handler and, subsequently, to a rejection handler of the promise, returned by `.promise()`.
 
-#### `.promise()`
+#### `.promise(result)`
 
-Returns a promise, which resolves when the machinegun empties and rejects when it gives up.
+Returns a promise, which resolves to an optional `result` argument value when the machinegun empties and rejects with the above `reason` when it gives up.
 
 ### Events
 
 #### `error`
 
 Machinegun will emit `error` event if a task has errored. This may be emitted multiple times in case `giveUpOnError` was set to `false`.
+
 ```javascript
 mg.on('error', (err) => console.log("Task errored", err));
 ```
+
+Argument passed to the handler will be either a truthy value passed to the callback or a promise rejection reason.
 
 #### `giveUp`
 
 Machinegun will emit `giveUp` event if a task has errored and `giveUpOnError` was set to `true`, or when `.giveUp()` method was invoked explicitly.
 It is not possible to load more tasks after the machinegun has given up.
+
 ```javascript
-mg.on('giveUp', () => console.log("White flags up!"));
+mg.on('giveUp', (reason) => console.log("White flags up!", reason));
 ```
 
 #### `empty`
@@ -145,13 +157,16 @@ Machinegun will emit `empty` after the last task in the magazine has completed.
 This will not be emitted if `giveUpOnError` was set to `true` and there was an error.
 However, if `giveUpOnError` was set to `false`, it will be emitted even if some tasks have errored.
 Please note that it is possible to load in more tasks after the magazine has emptied, hence this event may be emitted multiple times.
+
 ```javascript
 mg.on('empty', () => console.log("Magazine empty!"));
 ```
 
+If `ceaseOnEmpty` was set to `true` the machinegun will cease fire after emitting this event, also emitting `ceaseFire` event. To continue operation `.fire()` method has to be called.
+
 #### `fire` and `ceaseFire`
 
-Machinegun will emit `fire` and `ceaseFire` events when respective methods are invoked
+Machinegun will emit `fire` and `ceaseFire` events when respective methods are invoked. `ceaseFire` will also be emitted after `empty` if `ceaseOnEmpty` was set to `true`.
 ```javascript
 mg.on('fire', () => console.log("Fire opened"));
 mg.on('ceaseFire', () => console.log("Fire ceased"));
