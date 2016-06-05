@@ -25,7 +25,7 @@ module.exports = function (opt) {
 				// Only emit error if a listener exists
 				// This is mainly to prevent silent errors in promises
 				if (machinegun.listenerCount('error')) machinegun.emit('error', err);
-				if (opt.giveupOnError) machinegun.giveUp();
+				if (opt.giveupOnError) machinegun.giveUp(err);
 			}
 			trigger();
 		};
@@ -80,9 +80,9 @@ module.exports = function (opt) {
 		return machinegun;
 	};
 
-	machinegun.giveUp = function () {
+	machinegun.giveUp = function (reason) {
 		if (state != 'givenUp') {
-			machinegun.emit('giveUp');
+			machinegun.emit('giveUp', reason);
 			state = 'givenUp';
 		}
 	};
