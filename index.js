@@ -87,9 +87,9 @@ module.exports = function (opt) {
 		}
 	};
 
-	machinegun.promise = function () {
+	machinegun.promise = function (value) {
 		return new Promise(function (resolve, reject) {
-			machinegun.on('empty', resolve);
+			machinegun.on('empty', resolve.bind(null, value));
 			machinegun.on('giveUp', reject);
 		});
 	}
