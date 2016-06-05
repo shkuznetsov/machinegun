@@ -51,12 +51,28 @@ describe('machinegun', function () {
 		});
 	});
 
-	it("should fail on error", function(done) {
+	it("should fail on error if 'giveupOnError' is truthy", function(done) {
 		var mg = machinegun({giveupOnError: true});
 		mg.load(function (cb) {
-			cb('err');
+			cb('error');
 		});
-		mg.on('giveUp', done);
+		mg.on('giveUp', (value) => {
+			expect(value).to.equal('error');
+			done();
+		});
+	});
+
+	it("should cease fire after emptying if 'ceaseOnEmpty' is truthy", function(done) {
+		var mg = machinegun({ceaseOnEmpty: true});
+		mg.load(function (cb) {
+			cb();
+		});
+		mg.on('ceaseFire', function () {
+			expect(mg).to
+				.emit('empty')
+				.next('ceaseFire');
+			done();
+		});
 	});
 
 	it("should accept a promise instead of a callback", function(done) {
@@ -70,17 +86,23 @@ describe('machinegun', function () {
 	it("should emit an error if a promise rejects", function(done) {
 		var mg = machinegun();
 		mg.load(function () {
-			return Promise.reject();
+			return Promise.reject('error');
 		});
-		mg.on('error', function() {done();});
+		mg.on('error', (value) => {
+			expect(value).to.equal('error');
+			done();
+		});
 	});
 
 	it("should give up if a promise rejects", function(done) {
 		var mg = machinegun({giveupOnError: true});
 		mg.load(function () {
-			return Promise.reject();
+			return Promise.reject('error');
 		});
-		mg.on('giveUp', done);
+		mg.on('giveUp', (value) => {
+			expect(value).to.equal('error');
+			done();
+		});
 	});
 
 	it("should not start firing if 'fireImmediately' is set to false", function(done) {
@@ -112,14 +134,20 @@ describe('machinegun', function () {
 		mg.load(function () {
 			return Promise.resolve();
 		});
-		mg.promise().then(done);
+		mg.promise('success').then((value) => {
+			expect(value).to.equal('success');
+			done();
+		});
 	});
 
 	it("should return a promise, which rejects on failure", function(done) {
 		var mg = machinegun({giveupOnError: true});
 		mg.load(function () {
-			return Promise.reject();
+			return Promise.reject('error');
 		});
-		mg.promise().catch(done);
+		mg.promise().catch((value) => {
+			expect(value).to.equal('error');
+			done();
+		});
 	});
 });
