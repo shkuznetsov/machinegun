@@ -30,9 +30,9 @@ module.exports = function (opt) {
 			trigger();
 		};
 		var primer = function () {
-			var bang = powder(callback);
-			if (bang && (typeof bang.then == 'function')) {
-				bang.then(callback.bind(null, null), function (err) { callback(err || new Error()); });
+			var maybeThenable = powder(callback);
+			if (maybeThenable && (typeof maybeThenable.then == 'function')) {
+				maybeThenable.then(callback.bind(null, null), function (err) { callback(err || new Error()); });
 			}
 		};
 		this.shoot = function () {
