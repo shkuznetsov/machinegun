@@ -85,6 +85,7 @@ module.exports = function (opt) {
 			machinegun.emit('giveUp', reason);
 			state = 'givenUp';
 		}
+		return machinegun;
 	};
 
 	machinegun.promise = function (value) {
