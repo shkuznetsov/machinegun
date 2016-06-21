@@ -58,17 +58,19 @@ module.exports = function (opt) {
 	// API methods
 
 	machinegun.load = function (primer) {
-		magazine.push(new Cartridge(primer));
-		trigger();
+		if (state != 'givenUp') process.nextTick(function () {
+			magazine.push(new Cartridge(primer));
+			trigger();
+		});
 		return machinegun;
 	};
 
 	machinegun.fire = function () {
-		if (state == 'fireCeased') {
+		if (state == 'fireCeased') process.nextTick(function () {
 			machinegun.emit('fire');
 			state = 'firing';
 			trigger();
-		}
+		});
 		return machinegun;
 	};
 
