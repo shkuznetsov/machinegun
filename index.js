@@ -8,7 +8,7 @@ module.exports = function (opt) {
 
 	var opt = {
 		barrels: typeof opt.barrels == 'undefined' ? 1 : opt.barrels,
-		giveupOnError: typeof opt.giveupOnError == 'undefined' ? false : opt.giveupOnError,
+		giveUpOnError: typeof opt.giveUpOnError == 'undefined' ? false : opt.giveUpOnError,
 		ceaseOnEmpty: typeof opt.ceaseOnEmpty == 'undefined' ? false : opt.ceaseOnEmpty,
 		fireImmediately: typeof opt.fireImmediately == 'undefined' ? true : opt.fireImmediately
 	};
@@ -25,7 +25,7 @@ module.exports = function (opt) {
 				// Only emit error if a listener exists
 				// This is mainly to prevent silent errors in promises
 				if (machinegun.listenerCount('error')) machinegun.emit('error', err);
-				if (opt.giveupOnError) machinegun.giveUp(err);
+				if (opt.giveUpOnError) machinegun.giveUp(err);
 			}
 			trigger();
 		};
