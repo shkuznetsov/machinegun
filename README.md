@@ -18,7 +18,7 @@ var Machinegun = require('machinegun');
 var mg = new Machinegun({
   barrels: 1, // Number of parallel tasks, 1 => sequential execution
   giveUpOnError: false, // Cancel all the tasks if one fails?
-  ceaseOnEmpty: false, // Cease fire when magazine is empty?
+  ceaseFireOnEmpty: false, // Cease fire when magazine is empty?
   fireImmediately: true // Trigger the first task immediately after loading?
 });
 ```
@@ -90,7 +90,7 @@ Number of parallel task execution conveyors. Defaults to `1` which ensures seque
 Whether to cancel all running and scheduled tasks in case of an error. Defaults to `false`, which means all the tasks will be triggered despite of the errors.
 If an error occurs when `giveUpOnError` is set to `true`, it causes both `error` and `giveUp` events to be triggered with the error value passed to both as an argument.
 
-#### `ceaseOnEmpty` (bool)
+#### `ceaseFireOnEmpty` (bool)
 Whether to cease fire after the machinegun has emptied. Defaults to `false`, which means a task loaded after the machinegun has emptied will fire immediately. If set to `true` the machinegun will have to be implicitly restarted by calling `.fire()` after emptied.
 
 #### `fireImmediately` (bool)
@@ -162,11 +162,11 @@ Please note that it is possible to load in more tasks after the magazine has emp
 mg.on('empty', () => console.log("Magazine empty!"));
 ```
 
-If `ceaseOnEmpty` was set to `true` the machinegun will cease fire after emitting this event, also emitting `ceaseFire` event. To continue operation `.fire()` method has to be called.
+If `ceaseFireOnEmpty` was set to `true` the machinegun will cease fire after emitting this event, also emitting `ceaseFire` event. To continue operation `.fire()` method has to be called.
 
 #### `fire` and `ceaseFire`
 
-Machinegun will emit `fire` and `ceaseFire` events when respective methods are invoked. `ceaseFire` will also be emitted after `empty` if `ceaseOnEmpty` was set to `true`.
+Machinegun will emit `fire` and `ceaseFire` events when respective methods are invoked. `ceaseFire` will also be emitted after `empty` if `ceaseFireOnEmpty` was set to `true`.
 ```javascript
 mg.on('fire', () => console.log("Fire opened"));
 mg.on('ceaseFire', () => console.log("Fire ceased"));
