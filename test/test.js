@@ -62,8 +62,8 @@ describe('machinegun', function () {
 		});
 	});
 
-	it("should cease fire after emptying if 'ceaseOnEmpty' is truthy", function(done) {
-		var mg = machinegun({ceaseOnEmpty: true});
+	it("should cease fire after emptying if 'ceaseFireOnEmpty' is truthy", function(done) {
+		var mg = machinegun({ceaseFireOnEmpty: true});
 		mg.load(function (cb) {
 			cb();
 		});
@@ -95,7 +95,7 @@ describe('machinegun', function () {
 	});
 
 	it("should give up if a promise rejects", function(done) {
-		var mg = machinegun({giveupOnError: true});
+		var mg = machinegun({giveUpOnError: true});
 		mg.load(function () {
 			return Promise.reject('error');
 		});
@@ -141,7 +141,7 @@ describe('machinegun', function () {
 	});
 
 	it("should return a promise, which rejects on failure", function(done) {
-		var mg = machinegun({giveupOnError: true});
+		var mg = machinegun({giveUpOnError: true});
 		mg.load(function () {
 			return Promise.reject('error');
 		});
