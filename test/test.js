@@ -95,7 +95,7 @@ describe('machinegun', function () {
 	});
 
 	it("should give up if a promise rejects", function(done) {
-		var mg = machinegun({giveUpOnError: true});
+		var mg = machinegun({giveupOnError: true});
 		mg.load(function () {
 			return Promise.reject('error');
 		});
@@ -141,7 +141,7 @@ describe('machinegun', function () {
 	});
 
 	it("should return a promise, which rejects on failure", function(done) {
-		var mg = machinegun({giveUpOnError: true});
+		var mg = machinegun({giveupOnError: true});
 		mg.load(function () {
 			return Promise.reject('error');
 		});

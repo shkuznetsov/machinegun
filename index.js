@@ -9,7 +9,7 @@ module.exports = function (opt) {
 	var opt = {
 		barrels: typeof opt.barrels == 'undefined' ? 1 : opt.barrels,
 		giveUpOnError: typeof opt.giveUpOnError == 'undefined' ? false : opt.giveUpOnError,
-		ceaseOnEmpty: typeof opt.ceaseOnEmpty == 'undefined' ? false : opt.ceaseOnEmpty,
+		ceaseFireOnEmpty: typeof opt.ceaseFireOnEmpty == 'undefined' ? false : opt.ceaseFireOnEmpty,
 		fireImmediately: typeof opt.fireImmediately == 'undefined' ? true : opt.fireImmediately
 	};
 
@@ -50,7 +50,7 @@ module.exports = function (opt) {
 			}
 			else if (!shooting) {
 				machinegun.emit('empty');
-				if (opt.ceaseOnEmpty) machinegun.ceaseFire();
+				if (opt.ceaseFireOnEmpty) machinegun.ceaseFire();
 			}
 		}
 	};
