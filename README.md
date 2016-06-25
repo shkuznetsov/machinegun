@@ -99,7 +99,7 @@ If set to `false` the machinegun will be initialised in `fireCeased` state and w
 
 ### Methods
 
-#### `.load()`
+#### `.load(task)`
 
 Accepts a function, which should either accept a callback parameter or return a promise:
 
