@@ -112,19 +112,27 @@ mg.load(() => new Promise((resolve, reject) => process.nextTick(resolve)));
 
 If the callback is called with a falsy argument or the promise rejects, an `error` event is emitted with an error value or a rejection reason respectively as an argument.
 If `giveUpOnError` was set to `true` the machinegun also gives up, i.e. emits `giveUp` event with the same argument and cancels any subsequent tasks.
+`.load()` will execute on the next tick to allow for event handlers attachment etc.
+`.load()` returns a `machinegun` instance to allow chaining.
 
 #### `.fire()`
 
 Starts tasks execution in case `fireImmediately` was set to `false` or if the execution was previously paused with `.ceaseFire()`. Causes the machinegun to emit `fire` event.
+`.fire()` will execute on the next tick to allow for event handlers attachment etc.
+`.fire()` returns a `machinegun` instance to allow chaining.
 
 #### `.ceaseFire()`
 
-Pauses tasks execution until `.fire()` is called.
+Pauses tasks execution until `.fire()` is called. Causes the machinegun to emit `ceaseFire` event.
+`.ceaseFire()` executes and fires the event immediately (synchronously).
+`.ceaseFire()` returns a `machinegun` instance to allow chaining.
 
 #### `.giveUp(reason)`
 
-Aborts execution. No tasks may be added to the machinegun after it has given up. Nor can it be re-started with `.fire()`.
+Aborts execution. No tasks may be added to the machinegun after it has given up. Nor can it be re-started with `.fire()`. Causes the machinegun to emit `giveUp` event.
 Value of the optional `reason` argument will be passed to the `giveUp` event handler and, subsequently, to a rejection handler of the promise, returned by `.promise()`.
+`.giveUp()` executes and fires the event immediately (synchronously).
+`.giveUp()` returns a `machinegun` instance to allow chaining.
 
 #### `.promise(result)`
 
